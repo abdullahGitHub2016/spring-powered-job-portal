@@ -126,6 +126,25 @@ The frontend will run at:
 
 ------------------------------------------------------------------------
 
+---
+
+## 📸 Screenshots
+
+### 🏠 Home Page
+![Home Page](screenshots/home.png)
+
+### 📄 Job Details Page
+![Job Details](screenshots/job-details.png)
+
+### 📝 Job Application Form
+![Application Form](screenshots/apply-form.png)
+
+### 🛠️ Admin Dashboard
+![Admin Dashboard](screenshots/admin-dashboard.png)
+
+---
+
+
 ## 📝 Troubleshooting
 
 ### ❌ CORS Error
