@@ -1,115 +1,154 @@
-BdJobs Portal - Full Stack Application
+# 💼 BdJobs Portal -- Full Stack Application
 
-A full-stack job portal clone inspired by BDJobs, built using Spring Boot (Backend) and Vue 3 (Frontend).
+A full-stack job portal clone inspired by **BDJobs**, built using
+**Spring Boot (Backend)** and **Vue 3 (Frontend)**.
 
-🚀 Features
+------------------------------------------------------------------------
 
-Job Management: Create, Read, Update, and Delete job postings.
+## 🚀 Features
 
-Job Applications: Users can apply for jobs with their details and cover letters.
+-   **Job Management** -- Create, Read, Update, and Delete job postings\
+-   **Job Applications** -- Users can apply with their details and cover
+    letters\
+-   **Admin View** -- View all incoming job applications\
+-   **Responsive UI** -- Clean, modern interface styled with Tailwind
+    CSS
 
-Admin View: Specialized view to see all incoming job applications.
+------------------------------------------------------------------------
 
-Responsive UI: Clean, modern interface styled with Tailwind CSS.
+## 🛠️ Tech Stack
 
-🛠️ Tech Stack
+### 🔹 Backend
 
-Backend
+-   Java 17+
+-   Spring Boot 3.x
+-   Spring Data JPA (Hibernate)
+-   MySQL
+-   Lombok
 
-Java 17+
+### 🔹 Frontend
 
-Spring Boot 3.x
+-   Vue 3 (Composition API)
+-   Vue Router
+-   Tailwind CSS
+-   Lucide Icons
 
-Spring Data JPA (Hibernate)
+------------------------------------------------------------------------
 
-MySQL (Database)
+## ⚙️ Backend Setup (`myjobs-backend`)
 
-Lombok (for boilerplate reduction)
+### 1️⃣ Database Configuration
 
-Frontend
+Create a MySQL database named:
 
-Vue 3 (Composition API)
+``` sql
+bdjobs_db
+```
 
-Vue Router
+### 2️⃣ Configure `application.properties`
 
-Tailwind CSS (Styling)
-
-Lucide Icons
-
-⚙️ Backend Setup (myjobs-backend)
-
-Database Configuration:
-Create a MySQL database named bdjobs_db (or as configured in your properties).
-
-Configure application.properties:
-Ensure your database credentials match:
-
+``` properties
 spring.datasource.url=jdbc:mysql://localhost:3306/bdjobs_db
 spring.datasource.username=root
 spring.datasource.password=your_password
 spring.jpa.hibernate.ddl-auto=update
+```
 
+### 3️⃣ Run the Application
 
-Run the Application:
 Using Maven:
 
+``` bash
 mvn spring-boot:run
+```
 
+The backend API will run at:
 
-The API will be available at http://localhost:8080.
+    http://localhost:8080
 
-💻 Frontend Setup (myjobs-frontend)
+------------------------------------------------------------------------
 
-Install Dependencies:
+## 💻 Frontend Setup (`myjobs-frontend`)
 
+### 1️⃣ Install Dependencies
+
+``` bash
 npm install
+```
 
+### 2️⃣ Run Development Server
 
-Run Development Server:
-
+``` bash
 npm run dev
+```
 
+The frontend will run at:
 
-The frontend will be available at http://localhost:5173.
+    http://localhost:5173
 
-📡 API Endpoints
+------------------------------------------------------------------------
 
-Jobs
+## 📡 API Endpoints
 
-GET /api/jobs - Retrieve all job postings.
+### 📌 Jobs
 
-GET /api/jobs/{id} - Retrieve a specific job.
+  Method   Endpoint           Description
+  -------- ------------------ ---------------------------
+  GET      `/api/jobs`        Retrieve all job postings
+  GET      `/api/jobs/{id}`   Retrieve a specific job
+  POST     `/api/jobs`        Create a new job
+  PUT      `/api/jobs/{id}`   Update an existing job
+  DELETE   `/api/jobs/{id}`   Remove a job
 
-POST /api/jobs - Create a new job.
+------------------------------------------------------------------------
 
-PUT /api/jobs/{id} - Update an existing job.
+### 📌 Applications
 
-DELETE /api/jobs/{id} - Remove a job.
+  Method   Endpoint              Description
+  -------- --------------------- -----------------------------------------
+  POST     `/api/applications`   Submit a new job application
+  GET      `/api/applications`   View all submitted applications (Admin)
 
-Applications
+------------------------------------------------------------------------
 
-POST /api/applications - Submit a new job application.
+## 📁 Project Structure
 
-GET /api/applications - View all submitted applications (Admin).
+    ├── myjobs-backend
+    │   └── src/main/java/com/abdullah/bdjobs_backend
+    │       ├── controller/   # REST Controllers (Job, Application)
+    │       ├── entity/       # JPA Entities (JobPost, JobApplication)
+    │       └── repository/   # Data Access Interfaces
+    └── myjobs-frontend
+        ├── src
+        │   ├── views/        # Page components (Home, Details, Admin)
+        │   └── router/       # Navigation logic
+        └── index.html        # Main entry point
 
-📁 Project Structure
+------------------------------------------------------------------------
 
-├── myjobs-backend
-│   └── src/main/java/com/abdullah/bdjobs_backend
-│       ├── controller/   # REST Controllers (Job, Application)
-│       ├── entity/       # JPA Entities (JobPost, JobApplication)
-│       └── repository/   # Data Access Interfaces
-└── myjobs-frontend
-    ├── src
-    │   ├── views/        # Page components (Home, Details, Admin)
-    │   └── router/       # Navigation logic
-    └── index.html        # Main entry point
+## 📝 Troubleshooting
 
+### ❌ CORS Error
 
-📝 Troubleshooting
+Ensure this annotation is present on all controllers:
 
-CORS Error: Ensure @CrossOrigin(origins = "*") is present on all controllers.
+``` java
+@CrossOrigin(origins = "*")
+```
 
-405 Method Not Allowed: Restart the Spring Boot server after adding new @GetMapping or @PostMapping methods.
+------------------------------------------------------------------------
 
-Table not found: Check if spring.jpa.hibernate.ddl-auto is set to update or create.
+### ❌ 405 Method Not Allowed
+
+Restart the Spring Boot server after adding new `@GetMapping` or
+`@PostMapping` methods.
+
+------------------------------------------------------------------------
+
+### ❌ Table Not Found
+
+Ensure this property is set correctly:
+
+``` properties
+spring.jpa.hibernate.ddl-auto=update
+```
