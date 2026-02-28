@@ -1,0 +1,27 @@
+#Java/Spring Boot
+
+target/
+*.class
+*.jar
+*.war
+
+#IDE Settings
+
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+#Frontend/Node
+
+node_modules/
+dist/
+.env
+.DS_Store
+
+#Logs and OS files
+
+*.log
+bin/
