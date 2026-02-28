@@ -1,6 +1,6 @@
-# 💼 BdJobs Portal -- Full Stack Application
+# 💼 JAVAJobs Portal -- Full Stack Application
 
-A full-stack job portal clone inspired by **BDJobs**, built using
+A full-stack job portal clone inspired by **JAVAJobs**, built using
 **Spring Boot (Backend)** and **Vue 3 (Frontend)**.
 
 ------------------------------------------------------------------------
@@ -42,13 +42,13 @@ A full-stack job portal clone inspired by **BDJobs**, built using
 Create a MySQL database named:
 
 ``` sql
-bdjobs_db
+myjob_portal
 ```
 
 ### 2️⃣ Configure `application.properties`
 
 ``` properties
-spring.datasource.url=jdbc:mysql://localhost:3306/bdjobs_db
+spring.datasource.url=jdbc:mysql://localhost:3306/myjob_portal
 spring.datasource.username=root
 spring.datasource.password=your_password
 spring.jpa.hibernate.ddl-auto=update
@@ -114,7 +114,7 @@ The frontend will run at:
 ## 📁 Project Structure
 
     ├── myjobs-backend
-    │   └── src/main/java/com/abdullah/bdjobs_backend
+    │   └── src/main/java/com/abdullah/myjobs_backend
     │       ├── controller/   # REST Controllers (Job, Application)
     │       ├── entity/       # JPA Entities (JobPost, JobApplication)
     │       └── repository/   # Data Access Interfaces
