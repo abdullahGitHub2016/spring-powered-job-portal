@@ -8,6 +8,12 @@ import JobDetailsView from '../views/JobDetailsView.vue'
  * /job/:id  -> Shows the details for a specific job based on the ID from the backend
  */
 const routes = [
+  // Add this to your routes array in src/router/index.js
+  {
+    path: '/admin/applications',
+    name: 'admin-applications',
+    component: () => import('../views/AdminApplicationsView.vue')
+  },
   {
     path: '/',
     name: 'home',
@@ -18,7 +24,7 @@ const routes = [
     name: 'job-details',
     component: JobDetailsView,
     // Allows the :id to be passed as a prop to the component if needed
-    props: true 
+    props: true
   },
   // Catch-all 404 route (optional but recommended)
   {
