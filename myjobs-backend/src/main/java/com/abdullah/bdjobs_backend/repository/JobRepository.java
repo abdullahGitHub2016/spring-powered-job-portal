@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface JobRepository extends JpaRepository<JobPost, Long> {
-    // JpaRepository provides save(), findAll(), findById(), deleteById() automatically
+    // This interface now has save(), findAll(), findById(), and delete() automatically!
 }
