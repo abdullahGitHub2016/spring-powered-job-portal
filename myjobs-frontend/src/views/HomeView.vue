@@ -4,18 +4,16 @@
     <header class="bg-[#004d99] text-white py-12 px-4 shadow-inner">
       <div class="max-w-5xl mx-auto text-center">
         <h1 class="text-3xl md:text-4xl font-bold mb-8 text-black">Search Your Dream Job</h1>
-        
+
         <!-- SEARCH BOX -->
         <div class="bg-white rounded-md shadow-xl p-2 flex flex-col md:flex-row items-stretch gap-2 max-w-4xl mx-auto">
           <div class="flex-1 flex items-center px-3 border-b md:border-b-0 md:border-r border-gray-200">
             <span class="text-gray-400 mr-2">🔍</span>
-            <input 
-              type="text" 
-              placeholder="Job Title, Skills, or Company" 
-              class="w-full py-3 outline-none text-gray-700"
-            />
+            <input type="text" placeholder="Job Title, Skills, or Company"
+              class="w-full py-3 outline-none text-gray-700" />
           </div>
-          <button class="bg-[#f05a28] hover:bg-[#d44d20] text-black font-bold px-10 py-3 rounded transition-colors uppercase tracking-wide">
+          <button
+            class="bg-[#f05a28] hover:bg-[#d44d20] text-black font-bold px-10 py-3 rounded transition-colors uppercase tracking-wide">
             Search
           </button>
         </div>
@@ -43,13 +41,12 @@
 
       <!-- Job Grid -->
       <div v-if="!loading && !error" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div 
-          v-for="job in jobs" 
-          :key="job.id" 
-          class="bg-white rounded border border-gray-200 p-5 hover:shadow-lg transition-all cursor-pointer group relative overflow-hidden flex flex-col h-full"
-        >
-          <div class="absolute top-0 left-0 w-full h-1 bg-[#004d99] transform -translate-x-full group-hover:translate-x-0 transition-transform"></div>
-          
+        <div v-for="job in jobs" :key="job.id"
+          class="bg-white rounded border border-gray-200 p-5 hover:shadow-lg transition-all cursor-pointer group relative overflow-hidden flex flex-col h-full">
+          <div
+            class="absolute top-0 left-0 w-full h-1 bg-[#004d99] transform -translate-x-full group-hover:translate-x-0 transition-transform">
+          </div>
+
           <div class="mb-4">
             <h3 class="text-[#004d99] font-bold text-lg group-hover:underline leading-tight mb-2">
               {{ job.title }}
@@ -74,16 +71,18 @@
               Deadline: Open
             </div>
             <div class="text-blue-600 font-bold group-hover:translate-x-1 transition-transform">
-              <router-link :to="'/job/' + job.id" class="text-blue-600 font-bold uppercase cursor-pointer flex items-center">
-    View Details →
-</router-link>
+              <router-link :to="'/job/' + job.id"
+                class="text-blue-600 font-bold uppercase cursor-pointer flex items-center">
+                View Details →
+              </router-link>
             </div>
           </div>
         </div>
       </div>
-      
+
       <!-- Empty State -->
-      <div v-if="!loading && jobs.length === 0 && !error" class="text-center py-20 bg-white border border-dashed rounded-lg">
+      <div v-if="!loading && jobs.length === 0 && !error"
+        class="text-center py-20 bg-white border border-dashed rounded-lg">
         <p class="text-gray-500">No jobs posted yet. Check back later!</p>
       </div>
     </main>
@@ -95,7 +94,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import api from '../services/api.js'; // Centralized API service for better maintainability
 
 const jobs = ref([]);
 const loading = ref(true);
@@ -104,14 +104,10 @@ const error = ref(null);
 const fetchJobs = async () => {
   try {
     loading.value = true;
-    error.value = null;
-    // Calling your Spring Boot Backend
-    const response = await fetch('http://localhost:8080/api/jobs');
-    if (!response.ok) throw new Error("Failed to connect to API");
-    jobs.value = await response.json();
+    const response = await api.get('/jobs'); // No hardcoded URL!
+    jobs.value = response.data;
   } catch (err) {
-    error.value = "Backend unreachable. Ensure Spring Boot is running on port 8080.";
-    console.error(err);
+    error.value = "Unable to connect to the Job Server.";
   } finally {
     loading.value = false;
   }
@@ -128,9 +124,11 @@ onMounted(fetchJobs);
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #004d99;
   border-radius: 10px;
