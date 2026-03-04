@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-gray-50 pb-20">
-    <!-- Navigation -->
     <nav class="bg-white border-b py-4 px-6 mb-8 shadow-sm sticky top-0 z-40">
       <div class="max-w-6xl mx-auto flex justify-between items-center">
         <router-link to="/" class="text-[#004d99] font-bold flex items-center hover:underline">
@@ -20,10 +19,7 @@
     <div v-else-if="job" class="max-w-6xl mx-auto px-4">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        <!-- LEFT COLUMN: MAIN CONTENT -->
         <div class="lg:col-span-2 space-y-6">
-          
-          <!-- Header Card -->
           <div class="bg-white border rounded-lg p-6 md:p-8 shadow-sm">
             <h1 class="text-2xl md:text-4xl font-bold text-[#004d99] mb-2 leading-tight">{{ job.title }}</h1>
             <p class="text-xl text-gray-700 font-semibold mb-6 italic">{{ job.companyName }}</p>
@@ -35,10 +31,7 @@
             </div>
           </div>
 
-          <!-- Detailed Info Sections -->
           <div class="bg-white border rounded-lg p-6 md:p-8 shadow-sm space-y-8">
-            
-            <!-- Job Context/Description -->
             <section>
               <h3 class="text-lg font-bold text-gray-800 border-b pb-2 mb-4 flex items-center">
                 <span class="w-1.5 h-6 bg-[#004d99] mr-3 rounded"></span>
@@ -49,7 +42,6 @@
               </p>
             </section>
 
-            <!-- Static Requirements (Since these aren't in DB yet, we show placeholders) -->
             <section>
               <h3 class="text-lg font-bold text-gray-800 border-b pb-2 mb-4 flex items-center">
                 <span class="w-1.5 h-6 bg-[#004d99] mr-3 rounded"></span>
@@ -59,40 +51,17 @@
                 <li>Minimum 2-3 years of relevant professional experience.</li>
                 <li>Strong understanding of modern development workflows.</li>
                 <li>Ability to work in a fast-paced team environment.</li>
-                <li>Excellent problem-solving and communication skills.</li>
               </ul>
-            </section>
-
-            <!-- Education -->
-            <section>
-              <h3 class="text-lg font-bold text-gray-800 border-b pb-2 mb-4 flex items-center">
-                <span class="w-1.5 h-6 bg-[#004d99] mr-3 rounded"></span>
-                Educational Requirements
-              </h3>
-              <p class="text-gray-700">Bachelor degree in any discipline (CSE/EEE preferred for technical roles).</p>
             </section>
           </div>
         </div>
 
-        <!-- RIGHT COLUMN: SIDEBAR SUMMARY -->
         <div class="lg:col-span-1">
           <div class="bg-white border rounded-lg shadow-sm sticky top-24 overflow-hidden">
             <div class="bg-gray-50 px-6 py-4 border-b">
               <h3 class="font-bold text-gray-800 uppercase tracking-wider text-sm">Job Summary</h3>
             </div>
             <div class="p-6 space-y-5">
-              <div>
-                <p class="text-xs text-gray-400 uppercase font-bold mb-1">Published On</p>
-                <p class="text-sm font-semibold text-gray-700">Feb 28, 2026</p>
-              </div>
-              <div>
-                <p class="text-xs text-gray-400 uppercase font-bold mb-1">Employment Status</p>
-                <p class="text-sm font-semibold text-gray-700">Full-time</p>
-              </div>
-              <div>
-                <p class="text-xs text-gray-400 uppercase font-bold mb-1">Experience</p>
-                <p class="text-sm font-semibold text-gray-700">2 to 5 year(s)</p>
-              </div>
               <div>
                 <p class="text-xs text-gray-400 uppercase font-bold mb-1">Job Location</p>
                 <p class="text-sm font-semibold text-gray-700">{{ job.location }}</p>
@@ -106,16 +75,24 @@
                 <p class="text-sm font-bold text-red-600">March 15, 2026</p>
               </div>
 
-              <button @click="showModal = true" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-lg shadow-md uppercase transition-all mt-4 flex items-center justify-center gap-2">
-                Apply Now <span class="text-xl">🚀</span>
-              </button>
+              <template v-if="userRole !== 'EMPLOYER'">
+                <button @click="showModal = true" 
+                  class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-lg shadow-md uppercase transition-all mt-4 flex items-center justify-center gap-2">
+                  Apply Now <span class="text-xl">🚀</span>
+                </button>
+              </template>
+
+              <template v-else>
+                <router-link to="/admin/applications" 
+                  class="w-full bg-[#004d99] hover:bg-blue-800 text-white font-bold py-4 rounded-lg shadow-md uppercase transition-all mt-4 flex items-center justify-center gap-2 text-center">
+                  Manage Applicants 📋
+                </router-link>
+              </template>
             </div>
           </div>
         </div>
-
       </div>
 
-      <!-- APPLY MODAL -->
       <div v-if="showModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl max-w-lg w-full p-8 shadow-2xl relative animate-in fade-in zoom-in duration-200">
           <button @click="showModal = false" class="absolute top-4 right-6 text-3xl text-gray-400 hover:text-gray-600">&times;</button>
@@ -124,23 +101,19 @@
           <p class="text-gray-500 mb-8 border-b pb-4 text-sm">Position: {{ job.title }}</p>
 
           <form @submit.prevent="submitApp" class="space-y-4">
-            <div class="grid grid-cols-1 gap-4">
-              <input v-model="form.applicantName" placeholder="Your Full Name" required class="w-full p-4 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" />
-              <input v-model="form.applicantEmail" type="email" placeholder="Email Address" required class="w-full p-4 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" />
-              <input v-model="form.applicantPhone" placeholder="Mobile Number (e.g. 017...)" required class="w-full p-4 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" />
-              <textarea v-model="form.coverLetter" placeholder="Expected Salary & Why we should hire you?" rows="4" class="w-full p-4 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"></textarea>
-            </div>
+            <input v-model="form.applicantName" placeholder="Your Full Name" required class="w-full p-4 border rounded-lg outline-none" />
+            <input v-model="form.applicantEmail" type="email" placeholder="Email Address" required class="w-full p-4 border rounded-lg outline-none" />
+            <input v-model="form.applicantPhone" placeholder="Mobile Number" required class="w-full p-4 border rounded-lg outline-none" />
+            <textarea v-model="form.coverLetter" placeholder="Why we should hire you?" rows="4" class="w-full p-4 border rounded-lg outline-none"></textarea>
             
-            <button :disabled="sending" type="submit" class="w-full bg-[#004d99] text-white font-bold py-4 rounded-lg hover:bg-blue-800 transition shadow-lg disabled:bg-gray-400">
-              {{ sending ? 'Sending your details...' : 'Submit Application' }}
+            <button :disabled="sending" type="submit" class="w-full bg-[#004d99] text-white font-bold py-4 rounded-lg hover:bg-blue-800 disabled:bg-gray-400">
+              {{ sending ? 'Sending...' : 'Submit Application' }}
             </button>
           </form>
         </div>
       </div>
 
-      <!-- Success Notification -->
       <div v-if="success" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-8 py-4 rounded-full shadow-2xl z-[60] flex items-center gap-3 animate-bounce">
-        <span class="bg-green-500 rounded-full p-1 text-xs">✓</span>
         <span>Application sent successfully!</span>
       </div>
     </div>
@@ -148,7 +121,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
@@ -158,7 +131,15 @@ const showModal = ref(false);
 const sending = ref(false);
 const success = ref(false);
 
-const form = ref({ applicantName: '', applicantEmail: '', applicantPhone: '', coverLetter: '' });
+// Retrieves user role for conditional rendering
+const userRole = computed(() => localStorage.getItem('role'));
+
+const form = ref({ 
+  applicantName: '', 
+  applicantEmail: '', 
+  applicantPhone: '', 
+  coverLetter: '' 
+});
 
 const fetchJob = async () => {
   try {
@@ -176,15 +157,22 @@ const fetchJob = async () => {
 const submitApp = async () => {
   sending.value = true;
   try {
+    // 1. Retrieve the token stored during login
+    const token = localStorage.getItem('token'); 
+    
     const payload = { 
       ...form.value, 
       jobId: job.value.id, 
       jobTitle: job.value.title 
     };
     
+    // 2. Add the Authorization header to the POST request
     const res = await fetch('http://localhost:8080/api/applications', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // This fixes the 403 error
+      },
       body: JSON.stringify(payload)
     });
 
@@ -193,6 +181,8 @@ const submitApp = async () => {
       showModal.value = false;
       setTimeout(() => success.value = false, 4000);
       form.value = { applicantName: '', applicantEmail: '', applicantPhone: '', coverLetter: '' };
+    } else if (res.status === 403) {
+      alert("You must be logged in as a Candidate to apply.");
     }
   } catch (err) { 
     alert("Check if backend is running!"); 

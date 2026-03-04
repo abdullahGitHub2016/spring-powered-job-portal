@@ -58,20 +58,22 @@ const loading = ref(true);
 
 const fetchApplications = async () => {
   try {
-    const token = localStorage.getItem('token'); // Retrieve the token
+    // 1. Retrieve the token stored during login
+    const token = localStorage.getItem('token'); 
     
+    // 2. Include the Authorization header in the fetch request
     const res = await fetch('http://localhost:8080/api/applications', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`, // Send the token to the backend
+        'Authorization': `Bearer ${token}`, // This tells the backend who you are
         'Content-Type': 'application/json'
       }
     });
 
     if (res.ok) {
       applications.value = await res.json();
-    } else {
-      console.error("Server responded with error:", res.status);
+    } else if (res.status === 403) {
+      console.error("Access Denied: You do not have EMPLOYER permissions or the token is invalid.");
     }
   } catch (err) {
     console.error("Error fetching applications:", err);

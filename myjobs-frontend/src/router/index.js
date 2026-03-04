@@ -14,9 +14,23 @@ const routes = [
   { path: '/login', component: LoginView },
   { path: '/register', component: RegisterView },
   {
+    path: '/employer/dashboard',
+    component: () => import('@/views/EmployerDashboard.vue'),
+    meta: { requiresAuth: true, requiresEmployer: true }
+  },
+  {
+    path: '/candidate/dashboard',
+    component: () => import('@/views/CandidateDashboard.vue'),
+    meta: { requiresAuth: true } // Standard users
+  },
+  // Default /dashboard redirector
+  {
     path: '/dashboard',
-    component: () => import('@/views/Dashboard.vue'),
-    meta: { requiresAuth: true } // Mark routes that need login
+    beforeEnter: (to, from, next) => {
+      const role = localStorage.getItem('role');
+      if (role === 'EMPLOYER') next('/employer/dashboard');
+      else next('/candidate/dashboard');
+    }
   },
   // Add this to your routes array in src/router/index.js
   // src/router/index.js
@@ -61,20 +75,19 @@ const router = createRouter({
 // Inside your router.beforeEach in index.js
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token');
-  // FIX: Change 'userRole' to 'role'
-  const role = localStorage.getItem('role'); 
+  const role = localStorage.getItem('role'); // Matches key in LoginView.vue
 
-  // 1. Check if the route specifically requires an Employer
-  if (to.meta.requiresEmployer) {
-    if (role === 'EMPLOYER') {
-      next(); // User is an employer, let them in
-    } else {
-      next('/dashboard'); // User is logged in but not an employer, kick to dashboard
-    }
-    return;
+  // 1. Prevent logged-in users from seeing Login/Register
+  if (token && (to.path === '/login' || to.path === '/register')) {
+    return next('/dashboard');
+  }
+
+  // 2. Protect Admin routes - Employer role required
+  if (to.meta.requiresEmployer && role !== 'EMPLOYER') {
+    return next('/dashboard');
   }
   
-  // 2. Standard Auth Check
+  // 3. General Auth protection
   if (to.meta.requiresAuth && !token) {
     return next('/login');
   }
