@@ -58,9 +58,20 @@ const loading = ref(true);
 
 const fetchApplications = async () => {
   try {
-    const res = await fetch('http://localhost:8080/api/applications');
+    const token = localStorage.getItem('token'); // Retrieve the token
+    
+    const res = await fetch('http://localhost:8080/api/applications', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`, // Send the token to the backend
+        'Content-Type': 'application/json'
+      }
+    });
+
     if (res.ok) {
       applications.value = await res.json();
+    } else {
+      console.error("Server responded with error:", res.status);
     }
   } catch (err) {
     console.error("Error fetching applications:", err);
