@@ -26,21 +26,22 @@ public class AuthController {
     @Autowired
     private JwtUtils jwtUtils;
 
-
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
-        // This now works because Lombok provides the getEmail() method
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Error: Email is already taken!");
         }
 
-        // This now works because Lombok provides the setPassword() method
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
 
+        // Ensure a default role is set if missing
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("JOB_SEEKER");
+        }
+
+        userRepository.save(user);
         return ResponseEntity.ok("User registered successfully!");
     }
-
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody Map<String, String> loginData) {
@@ -51,13 +52,14 @@ public class AuthController {
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            // This will now work because getPassword() returns the actual hash
             if (passwordEncoder.matches(password, user.getPassword())) {
-                String token = jwtUtils.generateToken(user.getEmail()); //
+                // FIXED: Pass both email and role to generateToken
+                String role = user.getRole() != null ? user.getRole() : "JOB_SEEKER";
+                String token = jwtUtils.generateToken(user.getEmail(), role);
 
                 return ResponseEntity.ok(Map.of(
                         "token", token,
-                        "role", user.getRole() != null ? user.getRole() : "JOB_SEEKER"
+                        "role", role
                 ));
             }
         }
