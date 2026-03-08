@@ -4,6 +4,7 @@ import JobDetailsView from '../views/JobDetailsView.vue'
 // ADD THESE TWO LINES:
 import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
+import ResumeBuilder from '../views/ResumeBuilder.vue'
 
 /**
  * Route Definitions
@@ -57,6 +58,12 @@ const routes = [
   {
     path: '/:pathMatch(.*)*',
     redirect: '/'
+  },
+  {
+    path: '/resume-builder',
+    name: 'ResumeBuilder',
+    component: ResumeBuilder,
+    meta: { requiresAuth: true } // Ensure only logged-in users see this
   }
 ]
 
