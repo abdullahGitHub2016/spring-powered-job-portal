@@ -28,15 +28,28 @@ public class DashboardService {
     }
 
     public CompletableFuture<DashboardStats> getStats() {
-        // Use taskExecutor for every count query
-        CompletableFuture<Long> users = CompletableFuture.supplyAsync(userRepository::count, taskExecutor);
-        CompletableFuture<Long> jobs = CompletableFuture.supplyAsync(jobRepository::count, taskExecutor);
-        CompletableFuture<Long> apps = CompletableFuture.supplyAsync(applicationRepository::count, taskExecutor);
+        // 1. Log the count for Users
+        CompletableFuture<Long> users = CompletableFuture.supplyAsync(() -> {
+            System.out.println("QUERY 1 (Users) - Thread: " + Thread.currentThread().getName());
+            return userRepository.count();
+        }, taskExecutor);
+
+        // 2. Log the count for Jobs
+        CompletableFuture<Long> jobs = CompletableFuture.supplyAsync(() -> {
+            System.out.println("QUERY 2 (Jobs) - Thread: " + Thread.currentThread().getName());
+            return jobRepository.count();
+        }, taskExecutor);
+
+        // 3. Log the count for Applications
+        CompletableFuture<Long> apps = CompletableFuture.supplyAsync(() -> {
+            System.out.println("QUERY 3 (Apps) - Thread: " + Thread.currentThread().getName());
+            return applicationRepository.count();
+        }, taskExecutor);
 
         return CompletableFuture.allOf(users, jobs, apps)
                 .thenApplyAsync(v -> {
-                    // This block now safely retains ROLE_EMPLOYER
+                    System.out.println("COMBINING RESULTS - Thread: " + Thread.currentThread().getName());
                     return new DashboardStats(users.join(), jobs.join(), apps.join());
-                }, taskExecutor); // MUST use taskExecutor here too
+                }, taskExecutor);
     }
 }
