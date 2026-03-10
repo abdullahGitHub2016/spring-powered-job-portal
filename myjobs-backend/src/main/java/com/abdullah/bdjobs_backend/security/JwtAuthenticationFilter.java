@@ -68,5 +68,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+        System.out.println("DEBUG: Thread " + Thread.currentThread().getName() +
+                " | User: " + userEmail +
+                " | Roles: " + SecurityContextHolder.getContext().getAuthentication().getAuthorities());
     }
 }

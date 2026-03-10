@@ -4,9 +4,10 @@ import com.abdullah.bdjobs_backend.repository.UserRepository;
 import com.abdullah.bdjobs_backend.repository.JobRepository;
 import com.abdullah.bdjobs_backend.repository.ApplicationRepository;
 import com.abdullah.bdjobs_backend.dto.DashboardStats;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @Service
 public class DashboardService {
@@ -14,33 +15,28 @@ public class DashboardService {
     private final UserRepository userRepository;
     private final JobRepository jobRepository;
     private final ApplicationRepository applicationRepository;
+    private final Executor taskExecutor;
 
     public DashboardService(UserRepository userRepository,
                             JobRepository jobRepository,
-                            ApplicationRepository applicationRepository) {
+                            ApplicationRepository applicationRepository,
+                            @Qualifier("taskExecutor") Executor taskExecutor) {
         this.userRepository = userRepository;
         this.jobRepository = jobRepository;
         this.applicationRepository = applicationRepository;
+        this.taskExecutor = taskExecutor;
     }
 
     public CompletableFuture<DashboardStats> getStats() {
-        // Parallel execution logic
-        CompletableFuture<Long> users = CompletableFuture.supplyAsync(userRepository::count);
-        CompletableFuture<Long> jobs = CompletableFuture.supplyAsync(jobRepository::count);
-        CompletableFuture<Long> apps = CompletableFuture.supplyAsync(applicationRepository::count);
-        return CompletableFuture.allOf(users, jobs, apps)
-                .thenApply(v -> new DashboardStats(users.join(), jobs.join(), apps.join()));
-    }
+        // Use taskExecutor for every count query
+        CompletableFuture<Long> users = CompletableFuture.supplyAsync(userRepository::count, taskExecutor);
+        CompletableFuture<Long> jobs = CompletableFuture.supplyAsync(jobRepository::count, taskExecutor);
+        CompletableFuture<Long> apps = CompletableFuture.supplyAsync(applicationRepository::count, taskExecutor);
 
-    @Async("dashboardExecutor")
-    public void generatePdfReport(Long adminId) {
-        // This runs in a separate background thread
-        try {
-            // Your PDF generation logic goes here (e.g., iText or OpenPDF)
-            Thread.sleep(3000);
-            System.out.println("Background processing complete for Admin: " + adminId);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        return CompletableFuture.allOf(users, jobs, apps)
+                .thenApplyAsync(v -> {
+                    // This block now safely retains ROLE_EMPLOYER
+                    return new DashboardStats(users.join(), jobs.join(), apps.join());
+                }, taskExecutor); // MUST use taskExecutor here too
     }
 }
