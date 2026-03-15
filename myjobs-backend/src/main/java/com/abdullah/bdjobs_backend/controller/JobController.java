@@ -5,6 +5,8 @@ import com.abdullah.bdjobs_backend.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.abdullah.bdjobs_backend.dto.JobApplicationEvent;
+import com.abdullah.bdjobs_backend.service.JobApplicationService;
 
 import java.util.List;
 
@@ -15,6 +17,9 @@ public class JobController {
 
     @Autowired
     private JobRepository jobRepository;
+	
+	@Autowired
+    private JobApplicationService applicationService;
 
     // 1. GET ALL
     @GetMapping
@@ -63,4 +68,22 @@ public class JobController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+	
+	// 6. APPLY FOR JOB
+    @PostMapping("/{id}/apply")
+    public ResponseEntity<String> applyForJob(@PathVariable Long id, @RequestBody JobApplicationEvent event) {
+        return jobRepository.findById(id)
+            .map(job -> {
+                // Populate the event with job details
+                event.setJobId(job.getId());
+                event.setJobTitle(job.getTitle());
+                event.setCompanyName(job.getCompanyName());
+                
+                // Trigger Kafka
+                applicationService.sendApplicationEvent(event);
+                
+                return ResponseEntity.ok("Application submitted successfully and event sent to Kafka!");
+            })
+            .orElse(ResponseEntity.notFound().build());
+    }	
 }
